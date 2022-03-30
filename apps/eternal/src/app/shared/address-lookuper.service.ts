@@ -1,11 +1,11 @@
 import { parseAddress } from './parse-address';
 
 export class AddressLookuper {
-  constructor(private addresses: string[]) {}
+  constructor(private addressesSource: () => string[]) {}
 
   lookup(query: string): boolean {
     parseAddress(query);
-    return this.addresses.some((address) => address.startsWith(query));
+    return this.addressesSource().some((address) => address.startsWith(query));
   }
 
   // istanbul ignore next

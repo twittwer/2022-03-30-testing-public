@@ -9,7 +9,9 @@
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
-          "outputs": ["{options.outputPath}"],
+          "outputs": [
+            "{options.outputPath}"
+          ],
           "options": {
             "outputPath": "dist/apps/eternal",
             "index": "apps/eternal/src/index.html",
@@ -17,8 +19,13 @@
             "polyfills": "apps/eternal/src/polyfills.ts",
             "tsConfig": "apps/eternal/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["apps/eternal/src/favicon.ico", "apps/eternal/src/assets"],
-            "styles": ["apps/eternal/src/styles.scss"],
+            "assets": [
+              "apps/eternal/src/favicon.ico",
+              "apps/eternal/src/assets"
+            ],
+            "styles": [
+              "apps/eternal/src/styles.scss"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -84,9 +91,6 @@
             },
             "non-mock": {
               "browserTarget": "eternal:build:non-mock"
-            },
-            "dev-local": {
-              "browserTarget": "eternal:build:dev-local"
             }
           },
           "defaultConfiguration": "development"
@@ -100,12 +104,17 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/eternal/src/**/*.ts", "apps/eternal/src/**/*.html"]
+            "lintFilePatterns": [
+              "apps/eternal/src/**/*.ts",
+              "apps/eternal/src/**/*.html"
+            ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/eternal"],
+          "outputs": [
+            "coverage/apps/eternal"
+          ],
           "options": {
             "jestConfig": "apps/eternal/jest.config.js",
             "passWithNoTests": true
@@ -128,7 +137,9 @@
         },
         "build-storybook": {
           "builder": "@nrwl/storybook:build",
-          "outputs": ["{options.outputPath}"],
+          "outputs": [
+            "{options.outputPath}"
+          ],
           "options": {
             "uiFramework": "@storybook/angular",
             "outputPath": "dist/storybook/eternal",
@@ -170,13 +181,17 @@
         },
         "lint": {
           "builder": "@nrwl/linter:eslint",
-          "outputs": ["{options.outputFile}"],
+          "outputs": [
+            "{options.outputFile}"
+          ],
           "options": {
-            "lintFilePatterns": ["apps/eternal-e2e/**/*.{js,ts}"]
+            "lintFilePatterns": [
+              "apps/eternal-e2e/**/*.{js,ts}"
+            ]
           }
         }
       }
-    }
+    },
   },
   "cli": {
     "analytics": false,
