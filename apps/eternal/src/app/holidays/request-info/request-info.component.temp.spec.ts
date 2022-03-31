@@ -5,7 +5,7 @@ import { AddressLookuper } from '../../shared/address-lookuper.service';
 import { RequestInfoComponent } from './request-info.component';
 import { RequestInfoComponentModule } from './request-info.component.module';
 
-describe('RequestInfo Component Temporary', () => {
+describe.skip('RequestInfo Component Temporary', () => {
   let lookupMock = jest.fn<Observable<boolean>, [string]>();
   let fixture: ComponentFixture<RequestInfoComponent>;
   let component: RequestInfoComponent;
