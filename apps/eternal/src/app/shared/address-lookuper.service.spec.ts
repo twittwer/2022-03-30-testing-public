@@ -1,23 +1,51 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { fakeAsync } from '@angular/core/testing';
+import { asyncScheduler, firstValueFrom, of, scheduled } from 'rxjs';
 import { AddressLookuper } from './address-lookuper.service';
+import { assertType } from './assert-type';
 
 describe('Address Lookuper', () => {
-  it('should pass addresses in the constructor', () => {
-    const addresses = ['Domgasse 15, 1010 Wien'];
-    const lookuper = new AddressLookuper(() => addresses);
+  // TODO: fakeAsync schlägt an obwohl keine async. Tasks
+  for (let { response, isValid } of [
+    {
+      response: [true, 1],
+      isValid: true
+    },
+    {
+      response: [],
+      isValid: false
+    }
+  ]) {
+    it(`should return ${isValid} for ${response}`, fakeAsync(async () => {
+      const httpClientStub = assertType<HttpClient>({
+        get: () => scheduled([response], asyncScheduler)
+      });
 
-    expect(lookuper.lookup('Domgasse 5, 1010 Wien')).toBe(false);
-    expect(lookuper.lookup('Domgasse 15, 1010 Wien')).toBe(true);
-  });
+      const lookuper = new AddressLookuper(httpClientStub);
 
-  it('should work with short query input and long address store', () => {
-    const addresses = ['Domgasse 15, 1010 Wien'];
-    const lookuper = new AddressLookuper(() => addresses);
+      const result = await firstValueFrom(lookuper.lookup('Domgasse 5'));
+      expect(result).toEqual(isValid);
+    }));
+  }
 
-    expect(lookuper.lookup('Domgasse 15')).toBe(true);
+  it('should verify that nominatim is called', () => {
+    const httpClientMock = {
+      get: jest.fn<ReturnType<HttpClient['get']>, Parameters<HttpClient['get']>>()
+    };
+
+    httpClientMock.get.mockReturnValue(of(['Domgasse 5']));
+    const lookuper = new AddressLookuper(assertType<HttpClient>(httpClientMock));
+
+    lookuper.lookup('Domgasse 5');
+
+    expect(httpClientMock.get).toHaveBeenCalledWith(
+      'https://nominatim.openstreetmap.org/search.php',
+      { params: new HttpParams().set('q', 'Domgasse 5').set('format', 'jsonv2') }
+    );
   });
 
   it('should throw an error if no street number is given', () => {
-    const lookuper = new AddressLookuper(() => []);
+    const lookuper = new AddressLookuper(assertType<HttpClient>({}));
 
     expect(() => lookuper.lookup('Domgasse')).toThrowError(
       'Could not parse address. Invalid format.'

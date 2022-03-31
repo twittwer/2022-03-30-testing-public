@@ -1,24 +1,33 @@
-import { ComponentFixture, ComponentFixtureAutoDetect, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  ComponentFixture,
+  ComponentFixtureAutoDetect,
+  TestBed,
+  TestModuleMetadata
+} from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-
 import { NewsletterComponent } from './newsletter.component';
 
 describe('NewsletterComponent', () => {
   let component: NewsletterComponent;
   let fixture: ComponentFixture<NewsletterComponent>;
 
-  beforeEach(() => {
+  const setup = (config: TestModuleMetadata = {}) => {
     TestBed.configureTestingModule({
-      declarations: [NewsletterComponent],
-      imports: [ReactiveFormsModule],
-      providers: [{ provide: ComponentFixtureAutoDetect, useValue: true }]
+      ...{
+        declarations: [NewsletterComponent],
+        imports: [ReactiveFormsModule, HttpClientTestingModule],
+        providers: [{ provide: ComponentFixtureAutoDetect, useValue: true }]
+      },
+      ...config
     });
     fixture = TestBed.createComponent(NewsletterComponent);
     component = fixture.componentInstance;
-  });
+  };
 
   it('should create', () => {
+    setup({ providers: [] });
     expect(component).toBeTruthy();
   });
 
@@ -40,15 +49,21 @@ describe('NewsletterComponent', () => {
     expect(messageBox.textContent).toBe('Please provide an email');
   });
 
-  it('should subscribe with DOM interaction', () => {
+  it.only('should subscribe with DOM interaction', () => {
     const input = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
     input.value = 'user@host.com';
     input.dispatchEvent(new CustomEvent('input'));
 
     fixture.debugElement.query(By.css('button')).nativeElement.click();
+
+    const controller = TestBed.inject(HttpTestingController);
+    const req = controller.expectOne('http://some.host.com/newsletter/subscribe');
+    req.flush(true);
+    fixture.detectChanges();
+
     const messageBox = fixture.debugElement.query(By.css('p'))
       .nativeElement as HTMLParagraphElement;
-    expect(messageBox.textContent).toBe('Thank you for your subscription');
+    expect(messageBox.textContent).toBe('Thank for your subscription!');
   });
 
   it('should subscribe in mixed mode', () => {
